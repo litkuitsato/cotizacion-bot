@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cotización</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        h2 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: border-color 0.3s;
+            font-family: inherit;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+        .productos-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .productos-section h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+        .producto-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 2px solid #e0e0e0;
+        }
+        .producto-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .producto-nombre {
+            font-weight: 600;
+            color: #333;
+            flex: 1;
+            margin-right: 10px;
+        }
+        .btn-remove {
+            background: #ff4757;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+        .producto-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .producto-inputs input {
+            margin-bottom: 0;
+        }
+        .add-producto-section {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .add-producto-section select {
+            flex: 1;
+        }
+        .btn-add {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .btn-submit {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: transform 0.2s;
+        }
+        .btn-submit:hover {
+            transform: translateY(-2px);
+        }
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .success-message {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+        .success-message h2 {
+            color: #10ac84;
+            font-size: 32px;
+            margin-bottom: 15px;
+        }
+        .success-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+        
+        /* === RESPONSIVE === */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .container {
+                padding: 20px;
+                border-radius: 10px;
+            }
+            
+            h2 {
+                font-size: 24px;
+            }
+            
+            .subtitle {
+                font-size: 13px;
+            }
+            
+            .productos-section h3 {
+                font-size: 18px;
+            }
+            
+            input, select, textarea {
+                font-size: 16px;
+                padding: 14px;
+            }
+            
+            .btn-submit {
+                padding: 18px;
+                font-size: 18px;
+            }
+            
+            .btn-add {
+                padding: 14px 20px;
+            }
+            
+            .add-producto-section {
+                flex-direction: column;
+            }
+            
+            .add-producto-section select {
+                margin-bottom: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .producto-inputs {
+                grid-template-columns: 1fr;
+            }
+            
+            h2 {
+                font-size: 22px;
+            }
+            
+            .success-icon {
+                font-size: 48px;
+            }
+            
+            .producto-nombre {
+                font-size: 14px;
+            }
+            
+            .btn-remove {
+                padding: 6px 12px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="formContainer">
+            <h2>📋 Nueva Cotización</h2>
+            <p class="subtitle">Completa todos los campos para generar tu cotización</p>
+            
+            <form id="cotizacionForm">
+                <!-- Datos del Cliente -->
+                <div class="form-group">
+                    <label>👤 Nombre del Cliente *</label>
+                    <input type="text" name="cliente" required placeholder="Ej: Agroindustrias del Norte SAC">
+                </div>
+                
+                <div class="form-group">
+                    <label>📄 RUC *</label>
+                    <input type="text" name="ruc" required placeholder="Ej: 20123456789" pattern="[0-9]{11}">
+                </div>
+                
+                <div class="form-group">
+                    <label>📍 Dirección *</label>
+                    <textarea name="direccion" required placeholder="Ej: Av. Los Pinos 123, Lima"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>💳 Método de Pago *</label>
+                    <select name="metodo_pago" required>
+                        <option value="">Selecciona una opción</option>
+                        <option value="Contado">Contado</option>
+                        <option value="Crédito 30 días">Crédito 30 días</option>
+                        <option value="Crédito 60 días">Crédito 60 días</option>
+                        <option value="Crédito 90 días">Crédito 90 días</option>
+                    </select>
+                </div>
+                
+                <!-- Productos -->
+                <div class="productos-section">
+                    <h3>📦 Productos</h3>
+                    <div id="productosContainer"></div>
+                    
+                    <div class="add-producto-section">
+                        <select id="productoSelect">
+                            <option value="">Selecciona un producto</option>
+                            <option value="PARASEAL">PARASEAL</option>
+                            <option value="SEAL R FILM PRC4250">SEAL R FILM PRC4250</option>
+                            <option value="SEAL R FILM PRC4125">SEAL R FILM PRC4125</option>
+                            <option value="SEAL R FILM PRCD4250">SEAL R FILM PRCD4250 (caja dosificadora)</option>
+                            <option value="SEAL R FILM PRCD4125">SEAL R FILM PRCD4125 (caja dosificadora)</option>
+                            <option value="GRAFTING TAPE">GRAFTING TAPE</option>
+                            <option value="SEAL R FILM STRIPS PRC400">SEAL R FILM STRIPS PRC400</option>
+                            <option value="SEAL R FILM STRIPS PRC200">SEAL R FILM STRIPS PRC200</option>
+                            <option value="Mini rollo SEAL R FILM PRC406">Mini rollo SEAL R FILM PRC406</option>
+                            <option value="Mini rollo SEAL R FILM PRC419">Mini rollo SEAL R FILM PRC419</option>
+                        </select>
+                        <button type="button" class="btn-add" onclick="agregarProducto()">➕ Agregar</button>
+                    </div>
+                </div>
+                
+                <input type="hidden" name="chat_id" id="chat_id">
+                
+                <button type="submit" class="btn-submit">✅ Generar Cotización</button>
+            </form>
+        </div>
+        
+        <div class="success-message" id="successMessage">
+            <div class="success-icon">✅</div>
+            <h2>¡Cotización Enviada!</h2>
+            <p style="color: #666; font-size: 16px;">Recibirás tu documento en Telegram en unos momentos.</p>
+        </div>
+    </div>
+    
+    <script>
+        let productosAgregados = [];
+        
+        const params = new URLSearchParams(window.location.search);
+        document.getElementById('chat_id').value = params.get('chat_id') || '';
+        
+        function agregarProducto() {
+            const select = document.getElementById('productoSelect');
+            const productoNombre = select.value;
+            
+            if (!productoNombre) {
+                alert('Por favor selecciona un producto');
+                return;
+            }
+            
+            if (productosAgregados.find(p => p.nombre === productoNombre)) {
+                alert('Este producto ya fue agregado');
+                return;
+            }
+            
+            const producto = {
+                nombre: productoNombre,
+                cantidad: 1,
+                precio: 0
+            };
+            
+            productosAgregados.push(producto);
+            renderizarProductos();
+            select.value = '';
+        }
+        
+        function eliminarProducto(index) {
+            productosAgregados.splice(index, 1);
+            renderizarProductos();
+        }
+        
+        function actualizarProducto(index, campo, valor) {
+            productosAgregados[index][campo] = parseFloat(valor) || 0;
+        }
+        
+        function renderizarProductos() {
+            const container = document.getElementById('productosContainer');
+            
+            if (productosAgregados.length === 0) {
+                container.innerHTML = '<p style="color: #999; text-align: center; padding: 10px;">No hay productos agregados</p>';
+                return;
+            }
+            
+            container.innerHTML = productosAgregados.map((producto, index) => `
+                <div class="producto-item">
+                    <div class="producto-header">
+                        <span class="producto-nombre">${producto.nombre}</span>
+                        <button type="button" class="btn-remove" onclick="eliminarProducto(${index})">Eliminar</button>
+                    </div>
+                    <div class="producto-inputs">
+                        <div>
+                            <label style="font-size: 13px; margin-bottom: 5px;">Cantidad</label>
+                            <input type="number" 
+                                   min="1" 
+                                   value="${producto.cantidad}" 
+                                   onchange="actualizarProducto(${index}, 'cantidad', this.value)"
+                                   required>
+                        </div>
+                        <div>
+                            <label style="font-size: 13px; margin-bottom: 5px;">Precio Unitario (S/)</label>
+                            <input type="number" 
+                                   min="0" 
+                                   step="0.01" 
+                                   value="${producto.precio}" 
+                                   onchange="actualizarProducto(${index}, 'precio', this.value)"
+                                   required>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        document.getElementById('cotizacionForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            if (productosAgregados.length === 0) {
+                alert('Debes agregar al menos un producto');
+                return;
+            }
+            
+            const formData = new FormData(e.target);
+            const data = {
+                chat_id: formData.get('chat_id'),
+                cliente: formData.get('cliente'),
+                ruc: formData.get('ruc'),
+                direccion: formData.get('direccion'),
+                metodo_pago: formData.get('metodo_pago'),
+                productos: productosAgregados
+            };
+            
+            try {
+                const response = await fetch('TU-WEBHOOK-N8N-AQUI', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(data)
+                });
+                
+                if (response.ok) {
+                    document.getElementById('formContainer').style.display = 'none';
+                    document.getElementById('successMessage').style.display = 'block';
+                } else {
+                    alert('Error al enviar el formulario. Intenta de nuevo.');
+                }
+            } catch (error) {
+                alert('Error de conexión. Verifica tu internet.');
+            }
+        });
+        
+        renderizarProductos();
+    </script>
+</body>
+</html>
+
