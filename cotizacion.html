@@ -3,434 +3,482 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cotización</title>
+    <title>Cotización - SATO</title>
+    
+    <!-- SDK de Telegram Web App -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
         .container {
             max-width: 600px;
             margin: 0 auto;
             background: white;
-            border-radius: 15px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
             padding: 30px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            text-align: center;
         }
-        h2 {
-            color: #667eea;
-            margin-bottom: 10px;
+
+        .header h1 {
             font-size: 28px;
+            margin-bottom: 10px;
         }
-        .subtitle {
-            color: #666;
-            margin-bottom: 30px;
+
+        .header p {
+            opacity: 0.9;
             font-size: 14px;
         }
+
+        .form-container {
+            padding: 30px;
+        }
+
         .form-group {
             margin-bottom: 20px;
         }
+
         label {
             display: block;
             margin-bottom: 8px;
             color: #333;
             font-weight: 600;
+            font-size: 14px;
         }
-        input, select, textarea {
+
+        label .required {
+            color: #e74c3c;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        select,
+        textarea {
             width: 100%;
-            padding: 12px;
+            padding: 12px 15px;
             border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 15px;
-            transition: border-color 0.3s;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: all 0.3s ease;
             font-family: inherit;
         }
-        input:focus, select:focus, textarea:focus {
+
+        input:focus,
+        select:focus,
+        textarea:focus {
             outline: none;
             border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
+
         textarea {
-            min-height: 80px;
             resize: vertical;
+            min-height: 80px;
         }
-        .productos-section {
-            background: #f8f9fa;
-            padding: 20px;
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 30px 0 20px 0;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .section-title span {
+            font-size: 24px;
+        }
+
+        .section-title h2 {
+            font-size: 20px;
+            color: #333;
+        }
+
+        .producto-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .producto-selector select {
+            flex: 1;
+        }
+
+        .btn-agregar {
+            padding: 12px 24px;
+            background: #667eea;
+            color: white;
+            border: none;
             border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .btn-agregar:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .productos-container {
             margin: 20px 0;
         }
-        .productos-section h3 {
-            color: #667eea;
-            margin-bottom: 15px;
-            font-size: 20px;
-        }
+
         .producto-item {
-            background: white;
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
             padding: 15px;
-            border-radius: 8px;
             margin-bottom: 15px;
-            border: 2px solid #e0e0e0;
         }
+
         .producto-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
         }
+
         .producto-nombre {
-            font-weight: 600;
-            color: #333;
-            flex: 1;
-            margin-right: 10px;
+            font-weight: 700;
+            color: #667eea;
+            font-size: 16px;
         }
+
         .btn-remove {
-            background: #ff4757;
+            background: #e74c3c;
             color: white;
             border: none;
-            padding: 8px 15px;
-            border-radius: 5px;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
             cursor: pointer;
-            font-size: 13px;
-            white-space: nowrap;
+            transition: all 0.3s ease;
         }
+
+        .btn-remove:hover {
+            background: #c0392b;
+        }
+
         .producto-inputs {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 10px;
         }
+
         .producto-inputs input {
-            margin-bottom: 0;
+            margin-top: 5px;
         }
-        .add-producto-section {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-        }
-        .add-producto-section select {
-            flex: 1;
-        }
-        .btn-add {
-            background: #667eea;
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            white-space: nowrap;
-        }
+
         .btn-submit {
             width: 100%;
+            padding: 16px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            padding: 15px;
-            border-radius: 8px;
+            border-radius: 12px;
             font-size: 16px;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
+            transition: all 0.3s ease;
             margin-top: 20px;
-            transition: transform 0.2s;
         }
-        .btn-submit:hover {
+
+        .btn-submit:hover:not(:disabled) {
             transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
         }
-        .btn-submit:active {
-            transform: translateY(0);
-        }
+
         .btn-submit:disabled {
             opacity: 0.6;
             cursor: not-allowed;
         }
+
         .success-message {
             display: none;
             text-align: center;
             padding: 40px;
         }
+
         .success-message h2 {
-            color: #10ac84;
-            font-size: 32px;
-            margin-bottom: 15px;
+            color: #27ae60;
+            font-size: 24px;
+            margin-bottom: 10px;
         }
+
         .success-icon {
             font-size: 64px;
             margin-bottom: 20px;
         }
-        
-        @media (max-width: 768px) {
-            body {
-                padding: 10px;
-            }
-            .container {
-                padding: 20px;
-                border-radius: 10px;
-            }
-            h2 {
-                font-size: 24px;
-            }
-            .subtitle {
-                font-size: 13px;
-            }
-            .productos-section h3 {
-                font-size: 18px;
-            }
-            input, select, textarea {
-                font-size: 16px;
-                padding: 14px;
-            }
-            .btn-submit {
-                padding: 18px;
-                font-size: 18px;
-            }
-            .btn-add {
-                padding: 14px 20px;
-            }
-            .add-producto-section {
-                flex-direction: column;
-            }
-            .add-producto-section select {
-                margin-bottom: 10px;
-            }
-        }
 
-        @media (max-width: 480px) {
+        @media (max-width: 600px) {
+            body {
+                padding: 0;
+            }
+
+            .container {
+                border-radius: 0;
+                min-height: 100vh;
+            }
+
+            .form-container {
+                padding: 20px;
+            }
+
             .producto-inputs {
                 grid-template-columns: 1fr;
-            }
-            h2 {
-                font-size: 22px;
-            }
-            .success-icon {
-                font-size: 48px;
-            }
-            .producto-nombre {
-                font-size: 14px;
-            }
-            .btn-remove {
-                padding: 6px 12px;
-                font-size: 12px;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div id="formContainer">
-            <h2>📋 Nueva Cotización</h2>
-            <p class="subtitle">Completa todos los campos para generar tu cotización</p>
-            
+        <div class="header">
+            <h1>📝 Cotización SATO</h1>
+            <p>Sistema de generación de cotizaciones</p>
+        </div>
+
+        <div class="form-container" id="formContainer">
             <form id="cotizacionForm">
+                <input type="hidden" id="chat_id" name="chat_id">
+
                 <div class="form-group">
-                    <label>👤 Nombre del Cliente *</label>
-                    <input type="text" name="cliente" required placeholder="Ej: Agroindustrias del Norte SAC">
+                    <label for="cliente">
+                        👤 Cliente <span class="required">*</span>
+                    </label>
+                    <input type="text" id="cliente" name="cliente" placeholder="Nombre del cliente" required>
                 </div>
-                
+
                 <div class="form-group">
-                    <label>📄 RUC *</label>
-                    <input type="text" name="ruc" required placeholder="Ej: 20123456789" pattern="[0-9]{11}">
+                    <label for="ruc">
+                        🏢 RUC <span class="required">*</span>
+                    </label>
+                    <input type="text" id="ruc" name="ruc" placeholder="20123456789" required>
                 </div>
-                
+
                 <div class="form-group">
-                    <label>📍 Dirección *</label>
-                    <textarea name="direccion" required placeholder="Ej: Av. Los Pinos 123, Lima"></textarea>
+                    <label for="direccion">
+                        📍 Dirección <span class="required">*</span>
+                    </label>
+                    <textarea id="direccion" name="direccion" placeholder="Dirección completa del cliente" required></textarea>
                 </div>
-                
+
                 <div class="form-group">
-                    <label>💳 Método de Pago *</label>
-                    <select name="metodo_pago" required>
-                        <option value="">Selecciona una opción</option>
+                    <label for="metodo_pago">
+                        💳 Método de Pago <span class="required">*</span>
+                    </label>
+                    <select id="metodo_pago" name="metodo_pago" required>
+                        <option value="">Selecciona un método</option>
                         <option value="Contado">Contado</option>
-                        <option value="Crédito 30 días">Crédito 30 días</option>
-                        <option value="Crédito 60 días">Crédito 60 días</option>
-                        <option value="Crédito 90 días">Crédito 90 días</option>
+                        <option value="Credito">Crédito</option>
                     </select>
                 </div>
-                
-                <div class="productos-section">
-                    <h3>📦 Productos</h3>
-                    <div id="productosContainer"></div>
-                    
-                    <div class="add-producto-section">
-                        <select id="productoSelect">
-                            <option value="">Selecciona un producto</option>
-                            <option value="PARASEAL">PARASEAL</option>
-                            <option value="SEAL R FILM PRC4250">SEAL R FILM PRC4250</option>
-                            <option value="SEAL R FILM PRC4125">SEAL R FILM PRC4125</option>
-                            <option value="SEAL R FILM PRCD4250">SEAL R FILM PRCD4250 (caja dosificadora)</option>
-                            <option value="SEAL R FILM PRCD4125">SEAL R FILM PRCD4125 (caja dosificadora)</option>
-                            <option value="GRAFTING TAPE">GRAFTING TAPE</option>
-                            <option value="SEAL R FILM STRIPS PRC400">SEAL R FILM STRIPS PRC400</option>
-                            <option value="SEAL R FILM STRIPS PRC200">SEAL R FILM STRIPS PRC200</option>
-                            <option value="Mini rollo SEAL R FILM PRC406">Mini rollo SEAL R FILM PRC406</option>
-                            <option value="Mini rollo SEAL R FILM PRC419">Mini rollo SEAL R FILM PRC419</option>
-                        </select>
-                        <button type="button" class="btn-add" id="btnAgregar">➕ Agregar</button>
-                    </div>
+
+                <div class="section-title">
+                    <span>📦</span>
+                    <h2>Productos</h2>
                 </div>
-                
-                <input type="hidden" name="chat_id" id="chat_id">
-                
+
+                <div class="producto-selector">
+                    <select id="productoSelect">
+                        <option value="">Selecciona un producto</option>
+                        <option value="PARASEAL">PARASEAL</option>
+                        <option value="WATERSTOP">WATERSTOP</option>
+                        <option value="SIKAFLOOR">SIKAFLOOR</option>
+                        <option value="SIKADUR">SIKADUR</option>
+                        <option value="SIKA LATEX">SIKA LATEX</option>
+                        <option value="SIKA TOP 107">SIKA TOP 107</option>
+                        <option value="SEAL R FILM PRC4250">SEAL R FILM PRC4250</option>
+                    </select>
+                    <button type="button" class="btn-agregar" id="btnAgregar">➕ Agregar</button>
+                </div>
+
+                <div class="productos-container" id="productosContainer">
+                    <p style="color: #999; text-align: center; padding: 10px;">No hay productos agregados</p>
+                </div>
+
                 <button type="submit" class="btn-submit">✅ Generar Cotización</button>
             </form>
         </div>
-        
+
         <div class="success-message" id="successMessage">
             <div class="success-icon">✅</div>
-            <h2>¡Cotización Enviada!</h2>
-            <p style="color: #666; font-size: 16px;">Recibirás tu documento en Telegram en unos momentos.</p>
+            <h2>¡Cotización Generada!</h2>
+            <p>Tu cotización ha sido creada exitosamente.</p>
         </div>
     </div>
-    
+
     <script>
-    let productosAgregados = [];
-    
-    // Obtener chat_id de la URL
-    const params = new URLSearchParams(window.location.search);
-    document.getElementById('chat_id').value = params.get('chat_id') || '';
-    
-    // Función para agregar producto
-    function agregarProducto() {
-        const select = document.getElementById('productoSelect');
-        const productoNombre = select.value;
+        // Inicializar Telegram Web App
+        let tg = window.Telegram.WebApp;
+        tg.expand(); // Expandir la app a pantalla completa
         
-        if (!productoNombre) {
-            alert('Por favor selecciona un producto');
-            return;
-        }
+        let productosAgregados = [];
         
-        if (productosAgregados.find(p => p.nombre === productoNombre)) {
-            alert('Este producto ya fue agregado');
-            return;
-        }
+        // Obtener chat_id desde Telegram Web App
+        const chatId = tg.initDataUnsafe?.user?.id || '';
+        document.getElementById('chat_id').value = chatId;
         
-        const producto = {
-            nombre: productoNombre,
-            cantidad: 1,
-            precio: 0
-        };
-        
-        productosAgregados.push(producto);
-        renderizarProductos();
-        select.value = '';
-    }
-    
-    // Función para eliminar producto
-    function eliminarProducto(index) {
-        productosAgregados.splice(index, 1);
-        renderizarProductos();
-    }
-    
-    // Función para actualizar producto
-    function actualizarProducto(index, campo, valor) {
-        productosAgregados[index][campo] = parseFloat(valor) || 0;
-    }
-    
-    // Función para renderizar productos
-    function renderizarProductos() {
-        const container = document.getElementById('productosContainer');
-        
-        if (productosAgregados.length === 0) {
-            container.innerHTML = '<p style="color: #999; text-align: center; padding: 10px;">No hay productos agregados</p>';
-            return;
-        }
-        
-        container.innerHTML = productosAgregados.map((producto, index) => `
-            <div class="producto-item">
-                <div class="producto-header">
-                    <span class="producto-nombre">${producto.nombre}</span>
-                    <button type="button" class="btn-remove" onclick="eliminarProducto(${index})">Eliminar</button>
-                </div>
-                <div class="producto-inputs">
-                    <div>
-                        <label style="font-size: 13px; margin-bottom: 5px;">Cantidad</label>
-                        <input type="number" 
-                               min="1" 
-                               value="${producto.cantidad}" 
-                               onchange="actualizarProducto(${index}, 'cantidad', this.value)"
-                               required>
-                    </div>
-                    <div>
-                        <label style="font-size: 13px; margin-bottom: 5px;">Precio Unitario (S/)</label>
-                        <input type="number" 
-                               min="0" 
-                               step="0.01" 
-                               value="${producto.precio}" 
-                               onchange="actualizarProducto(${index}, 'precio', this.value)"
-                               required>
-                    </div>
-                </div>
-            </div>
-        `).join('');
-    }
-    
-    // Event listener para el botón agregar
-    document.getElementById('btnAgregar').addEventListener('click', agregarProducto);
-    
-    // Event listener para el formulario
-    document.getElementById('cotizacionForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        
-        if (productosAgregados.length === 0) {
-            alert('Debes agregar al menos un producto');
-            return;
-        }
-        
-        const formData = new FormData(e.target);
-        const data = {
-            chat_id: formData.get('chat_id'),
-            cliente: formData.get('cliente'),
-            ruc: formData.get('ruc'),
-            direccion: formData.get('direccion'),
-            metodo_pago: formData.get('metodo_pago'),
-            productos: productosAgregados
-        };
-        
-        const submitBtn = document.querySelector('.btn-submit');
-        submitBtn.disabled = true;
-        submitBtn.textContent = '⏳ Enviando...';
-        
-        try {
-            // URL de n8n.cloud - ACTUALIZADA
-            const webhookUrl = 'https://satoadmin09.app.n8n.cloud/webhook-test/cotizacion-form';
+        // Función para agregar producto
+        function agregarProducto() {
+            const select = document.getElementById('productoSelect');
+            const productoNombre = select.value;
             
-            console.log('Enviando datos:', data);
-            
-            const response = await fetch(webhookUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data)
-            });
-            
-            console.log('Status:', response.status);
-            
-            if (response.ok || response.status === 200) {
-                document.getElementById('formContainer').style.display = 'none';
-                document.getElementById('successMessage').style.display = 'block';
-            } else {
-                throw new Error('Error en la respuesta: ' + response.status);
+            if (!productoNombre) {
+                tg.showAlert('Por favor selecciona un producto');
+                return;
             }
-        } catch (error) {
-            console.error('Error completo:', error);
-            alert('Error: ' + error.message + '\n\nVerifica:\n1. Workflow está en n8n.cloud\n2. URL es correcta\n3. Credenciales están configuradas');
-            submitBtn.disabled = false;
-            submitBtn.textContent = '✅ Generar Cotización';
+            
+            if (productosAgregados.find(p => p.nombre === productoNombre)) {
+                tg.showAlert('Este producto ya fue agregado');
+                return;
+            }
+            
+            const producto = {
+                nombre: productoNombre,
+                cantidad: 1,
+                precio: 0
+            };
+            
+            productosAgregados.push(producto);
+            renderizarProductos();
+            select.value = '';
         }
-    });
-    
-    // Inicializar la vista de productos
-    renderizarProductos();
-</script>
+        
+        // Función para eliminar producto
+        function eliminarProducto(index) {
+            productosAgregados.splice(index, 1);
+            renderizarProductos();
+        }
+        
+        // Función para actualizar producto
+        function actualizarProducto(index, campo, valor) {
+            productosAgregados[index][campo] = parseFloat(valor) || 0;
+        }
+        
+        // Función para renderizar productos
+        function renderizarProductos() {
+            const container = document.getElementById('productosContainer');
+            
+            if (productosAgregados.length === 0) {
+                container.innerHTML = '<p style="color: #999; text-align: center; padding: 10px;">No hay productos agregados</p>';
+                return;
+            }
+            
+            container.innerHTML = productosAgregados.map((producto, index) => `
+                <div class="producto-item">
+                    <div class="producto-header">
+                        <span class="producto-nombre">${producto.nombre}</span>
+                        <button type="button" class="btn-remove" onclick="eliminarProducto(${index})">Eliminar</button>
+                    </div>
+                    <div class="producto-inputs">
+                        <div>
+                            <label style="font-size: 13px; margin-bottom: 5px;">Cantidad</label>
+                            <input type="number" 
+                                   min="1" 
+                                   value="${producto.cantidad}" 
+                                   onchange="actualizarProducto(${index}, 'cantidad', this.value)"
+                                   required>
+                        </div>
+                        <div>
+                            <label style="font-size: 13px; margin-bottom: 5px;">Precio Unitario (S/)</label>
+                            <input type="number" 
+                                   min="0" 
+                                   step="0.01" 
+                                   value="${producto.precio}" 
+                                   onchange="actualizarProducto(${index}, 'precio', this.value)"
+                                   required>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // Event listener para el botón agregar
+        document.getElementById('btnAgregar').addEventListener('click', agregarProducto);
+        
+        // Event listener para el formulario
+        document.getElementById('cotizacionForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            if (productosAgregados.length === 0) {
+                tg.showAlert('Debes agregar al menos un producto');
+                return;
+            }
+            
+            const formData = new FormData(e.target);
+            const data = {
+                chat_id: formData.get('chat_id') || chatId,
+                cliente: formData.get('cliente'),
+                ruc: formData.get('ruc'),
+                direccion: formData.get('direccion'),
+                metodo_pago: formData.get('metodo_pago'),
+                productos: productosAgregados
+            };
+            
+            const submitBtn = document.querySelector('.btn-submit');
+            submitBtn.disabled = true;
+            submitBtn.textContent = '⏳ Enviando...';
+            
+            try {
+                // URL de n8n.cloud
+                const webhookUrl = 'https://satoadmin09.app.n8n.cloud/webhook-test/cotizacion-form';
+                
+                console.log('Enviando datos:', data);
+                
+                const response = await fetch(webhookUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                console.log('Status:', response.status);
+                
+                if (response.ok || response.status === 200) {
+                    // Mostrar mensaje de éxito
+                    document.getElementById('formContainer').style.display = 'none';
+                    document.getElementById('successMessage').style.display = 'block';
+                    
+                    // Cerrar la Web App de Telegram después de 2 segundos
+                    setTimeout(() => {
+                        tg.close();
+                    }, 2000);
+                } else {
+                    throw new Error('Error en la respuesta: ' + response.status);
+                }
+            } catch (error) {
+                console.error('Error completo:', error);
+                tg.showAlert('Error: ' + error.message + '\n\nIntenta de nuevo.');
+                submitBtn.disabled = false;
+                submitBtn.textContent = '✅ Generar Cotización';
+            }
+        });
+        
+        // Inicializar la vista de productos
+        renderizarProductos();
+    </script>
 </body>
 </html>
-
-
-
-
-
-
-
