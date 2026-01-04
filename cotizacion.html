@@ -393,8 +393,8 @@
         submitBtn.textContent = '⏳ Enviando...';
         
         try {
-            // IMPORTANTE: Reemplaza esto con tu URL real de ngrok
-            const webhookUrl = 'https://satoadmin09.app.n8n.cloud/webhook/cotizacion-form';
+            // URL de n8n.cloud - ACTUALIZADA
+            const webhookUrl = 'https://satoadmin09.app.n8n.cloud/webhook-test/cotizacion-form';
             
             console.log('Enviando datos:', data);
             
@@ -416,7 +416,7 @@
             }
         } catch (error) {
             console.error('Error completo:', error);
-            alert('Error: ' + error.message + '\n\nVerifica:\n1. Ngrok está corriendo\n2. Workflow está activo\n3. URL es correcta');
+            alert('Error: ' + error.message + '\n\nVerifica:\n1. Workflow está en n8n.cloud\n2. URL es correcta\n3. Credenciales están configuradas');
             submitBtn.disabled = false;
             submitBtn.textContent = '✅ Generar Cotización';
         }
@@ -427,6 +427,8 @@
 </script>
 </body>
 </html>
+
+
 
 
 
