@@ -160,47 +160,37 @@
             margin-bottom: 20px;
         }
         
-        /* === RESPONSIVE === */
         @media (max-width: 768px) {
             body {
                 padding: 10px;
             }
-            
             .container {
                 padding: 20px;
                 border-radius: 10px;
             }
-            
             h2 {
                 font-size: 24px;
             }
-            
             .subtitle {
                 font-size: 13px;
             }
-            
             .productos-section h3 {
                 font-size: 18px;
             }
-            
             input, select, textarea {
                 font-size: 16px;
                 padding: 14px;
             }
-            
             .btn-submit {
                 padding: 18px;
                 font-size: 18px;
             }
-            
             .btn-add {
                 padding: 14px 20px;
             }
-            
             .add-producto-section {
                 flex-direction: column;
             }
-            
             .add-producto-section select {
                 margin-bottom: 10px;
             }
@@ -210,19 +200,15 @@
             .producto-inputs {
                 grid-template-columns: 1fr;
             }
-            
             h2 {
                 font-size: 22px;
             }
-            
             .success-icon {
                 font-size: 48px;
             }
-            
             .producto-nombre {
                 font-size: 14px;
             }
-            
             .btn-remove {
                 padding: 6px 12px;
                 font-size: 12px;
@@ -237,7 +223,6 @@
             <p class="subtitle">Completa todos los campos para generar tu cotización</p>
             
             <form id="cotizacionForm">
-                <!-- Datos del Cliente -->
                 <div class="form-group">
                     <label>👤 Nombre del Cliente *</label>
                     <input type="text" name="cliente" required placeholder="Ej: Agroindustrias del Norte SAC">
@@ -264,7 +249,6 @@
                     </select>
                 </div>
                 
-                <!-- Productos -->
                 <div class="productos-section">
                     <h3>📦 Productos</h3>
                     <div id="productosContainer"></div>
@@ -283,7 +267,7 @@
                             <option value="Mini rollo SEAL R FILM PRC406">Mini rollo SEAL R FILM PRC406</option>
                             <option value="Mini rollo SEAL R FILM PRC419">Mini rollo SEAL R FILM PRC419</option>
                         </select>
-                        <button type="button" class="btn-add" onclick="agregarProducto()">➕ Agregar</button>
+                        <button type="button" class="btn-add" id="btnAgregar">➕ Agregar</button>
                     </div>
                 </div>
                 
@@ -303,9 +287,11 @@
     <script>
         let productosAgregados = [];
         
+        // Obtener chat_id de la URL
         const params = new URLSearchParams(window.location.search);
         document.getElementById('chat_id').value = params.get('chat_id') || '';
         
+        // Función para agregar producto
         function agregarProducto() {
             const select = document.getElementById('productoSelect');
             const productoNombre = select.value;
@@ -331,15 +317,18 @@
             select.value = '';
         }
         
+        // Función para eliminar producto
         function eliminarProducto(index) {
             productosAgregados.splice(index, 1);
             renderizarProductos();
         }
         
+        // Función para actualizar producto
         function actualizarProducto(index, campo, valor) {
             productosAgregados[index][campo] = parseFloat(valor) || 0;
         }
         
+        // Función para renderizar productos
         function renderizarProductos() {
             const container = document.getElementById('productosContainer');
             
@@ -377,6 +366,10 @@
             `).join('');
         }
         
+        // Event listener para el botón agregar
+        document.getElementById('btnAgregar').addEventListener('click', agregarProducto);
+        
+        // Event listener para el formulario
         document.getElementById('cotizacionForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
@@ -388,4 +381,51 @@
             const formData = new FormData(e.target);
             const data = {
                 chat_id: formData.get('chat_id'),
-                cli
+                cliente: formData.get('cliente'),
+                ruc: formData.get('ruc'),
+                direccion: formData.get('direccion'),
+                metodo_pago: formData.get('metodo_pago'),
+                productos: productosAgregados
+            };
+            
+            const submitBtn = document.querySelector('.btn-submit');
+            submitBtn.disabled = true;
+            submitBtn.textContent = '⏳ Enviando...';
+            
+            try {
+                const webhookUrl = 'https://cade-incomputable-nonfervently.ngrok-free.dev/webhook/cotizacion-form';
+                const proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(webhookUrl);
+                
+                console.log('Enviando datos:', data);
+                
+                const response = await fetch(proxyUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                console.log('Status:', response.status);
+                
+                if (response.ok || response.status === 200) {
+                    document.getElementById('formContainer').style.display = 'none';
+                    document.getElementById('successMessage').style.display = 'block';
+                } else {
+                    throw new Error('Error en la respuesta: ' + response.status);
+                }
+            } catch (error) {
+                console.error('Error completo:', error);
+                alert('Error: ' + error.message);
+                submitBtn.disabled = false;
+                submitBtn.textContent = '✅ Generar Cotización';
+            }
+        });
+        
+        // Inicializar la vista de productos
+        renderizarProductos();
+    </script>
+</body>
+</html>
+
+
