@@ -388,35 +388,4 @@
             const formData = new FormData(e.target);
             const data = {
                 chat_id: formData.get('chat_id'),
-                cliente: formData.get('cliente'),
-                ruc: formData.get('ruc'),
-                direccion: formData.get('direccion'),
-                metodo_pago: formData.get('metodo_pago'),
-                productos: productosAgregados
-            };
-            
-            try {
-                const response = await fetch('https://cade-incomputable-nonfervently.ngrok-free.dev/webhook/cotizacion-form', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify(data)
-                });
-                
-                if (response.ok) {
-                    document.getElementById('formContainer').style.display = 'none';
-                    document.getElementById('successMessage').style.display = 'block';
-                } else {
-                    alert('Error al enviar el formulario. Intenta de nuevo.');
-                }
-            } catch (error) {
-                alert('Error de conexión. Verifica tu internet.');
-            }
-        });
-        
-        renderizarProductos();
-    </script>
-</body>
-</html>
-
-
-
+                cli
