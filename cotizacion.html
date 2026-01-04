@@ -285,147 +285,149 @@
     </div>
     
     <script>
-        let productosAgregados = [];
+    let productosAgregados = [];
+    
+    // Obtener chat_id de la URL
+    const params = new URLSearchParams(window.location.search);
+    document.getElementById('chat_id').value = params.get('chat_id') || '';
+    
+    // Función para agregar producto
+    function agregarProducto() {
+        const select = document.getElementById('productoSelect');
+        const productoNombre = select.value;
         
-        // Obtener chat_id de la URL
-        const params = new URLSearchParams(window.location.search);
-        document.getElementById('chat_id').value = params.get('chat_id') || '';
-        
-        // Función para agregar producto
-        function agregarProducto() {
-            const select = document.getElementById('productoSelect');
-            const productoNombre = select.value;
-            
-            if (!productoNombre) {
-                alert('Por favor selecciona un producto');
-                return;
-            }
-            
-            if (productosAgregados.find(p => p.nombre === productoNombre)) {
-                alert('Este producto ya fue agregado');
-                return;
-            }
-            
-            const producto = {
-                nombre: productoNombre,
-                cantidad: 1,
-                precio: 0
-            };
-            
-            productosAgregados.push(producto);
-            renderizarProductos();
-            select.value = '';
+        if (!productoNombre) {
+            alert('Por favor selecciona un producto');
+            return;
         }
         
-        // Función para eliminar producto
-        function eliminarProducto(index) {
-            productosAgregados.splice(index, 1);
-            renderizarProductos();
+        if (productosAgregados.find(p => p.nombre === productoNombre)) {
+            alert('Este producto ya fue agregado');
+            return;
         }
         
-        // Función para actualizar producto
-        function actualizarProducto(index, campo, valor) {
-            productosAgregados[index][campo] = parseFloat(valor) || 0;
+        const producto = {
+            nombre: productoNombre,
+            cantidad: 1,
+            precio: 0
+        };
+        
+        productosAgregados.push(producto);
+        renderizarProductos();
+        select.value = '';
+    }
+    
+    // Función para eliminar producto
+    function eliminarProducto(index) {
+        productosAgregados.splice(index, 1);
+        renderizarProductos();
+    }
+    
+    // Función para actualizar producto
+    function actualizarProducto(index, campo, valor) {
+        productosAgregados[index][campo] = parseFloat(valor) || 0;
+    }
+    
+    // Función para renderizar productos
+    function renderizarProductos() {
+        const container = document.getElementById('productosContainer');
+        
+        if (productosAgregados.length === 0) {
+            container.innerHTML = '<p style="color: #999; text-align: center; padding: 10px;">No hay productos agregados</p>';
+            return;
         }
         
-        // Función para renderizar productos
-        function renderizarProductos() {
-            const container = document.getElementById('productosContainer');
-            
-            if (productosAgregados.length === 0) {
-                container.innerHTML = '<p style="color: #999; text-align: center; padding: 10px;">No hay productos agregados</p>';
-                return;
-            }
-            
-            container.innerHTML = productosAgregados.map((producto, index) => `
-                <div class="producto-item">
-                    <div class="producto-header">
-                        <span class="producto-nombre">${producto.nombre}</span>
-                        <button type="button" class="btn-remove" onclick="eliminarProducto(${index})">Eliminar</button>
+        container.innerHTML = productosAgregados.map((producto, index) => `
+            <div class="producto-item">
+                <div class="producto-header">
+                    <span class="producto-nombre">${producto.nombre}</span>
+                    <button type="button" class="btn-remove" onclick="eliminarProducto(${index})">Eliminar</button>
+                </div>
+                <div class="producto-inputs">
+                    <div>
+                        <label style="font-size: 13px; margin-bottom: 5px;">Cantidad</label>
+                        <input type="number" 
+                               min="1" 
+                               value="${producto.cantidad}" 
+                               onchange="actualizarProducto(${index}, 'cantidad', this.value)"
+                               required>
                     </div>
-                    <div class="producto-inputs">
-                        <div>
-                            <label style="font-size: 13px; margin-bottom: 5px;">Cantidad</label>
-                            <input type="number" 
-                                   min="1" 
-                                   value="${producto.cantidad}" 
-                                   onchange="actualizarProducto(${index}, 'cantidad', this.value)"
-                                   required>
-                        </div>
-                        <div>
-                            <label style="font-size: 13px; margin-bottom: 5px;">Precio Unitario (S/)</label>
-                            <input type="number" 
-                                   min="0" 
-                                   step="0.01" 
-                                   value="${producto.precio}" 
-                                   onchange="actualizarProducto(${index}, 'precio', this.value)"
-                                   required>
-                        </div>
+                    <div>
+                        <label style="font-size: 13px; margin-bottom: 5px;">Precio Unitario (S/)</label>
+                        <input type="number" 
+                               min="0" 
+                               step="0.01" 
+                               value="${producto.precio}" 
+                               onchange="actualizarProducto(${index}, 'precio', this.value)"
+                               required>
                     </div>
                 </div>
-            `).join('');
+            </div>
+        `).join('');
+    }
+    
+    // Event listener para el botón agregar
+    document.getElementById('btnAgregar').addEventListener('click', agregarProducto);
+    
+    // Event listener para el formulario
+    document.getElementById('cotizacionForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        if (productosAgregados.length === 0) {
+            alert('Debes agregar al menos un producto');
+            return;
         }
         
-        // Event listener para el botón agregar
-        document.getElementById('btnAgregar').addEventListener('click', agregarProducto);
+        const formData = new FormData(e.target);
+        const data = {
+            chat_id: formData.get('chat_id'),
+            cliente: formData.get('cliente'),
+            ruc: formData.get('ruc'),
+            direccion: formData.get('direccion'),
+            metodo_pago: formData.get('metodo_pago'),
+            productos: productosAgregados
+        };
         
-        // Event listener para el formulario
-        document.getElementById('cotizacionForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            if (productosAgregados.length === 0) {
-                alert('Debes agregar al menos un producto');
-                return;
-            }
-            
-            const formData = new FormData(e.target);
-            const data = {
-                chat_id: formData.get('chat_id'),
-                cliente: formData.get('cliente'),
-                ruc: formData.get('ruc'),
-                direccion: formData.get('direccion'),
-                metodo_pago: formData.get('metodo_pago'),
-                productos: productosAgregados
-            };
-            
-            const submitBtn = document.querySelector('.btn-submit');
-            submitBtn.disabled = true;
-            submitBtn.textContent = '⏳ Enviando...';
-            
-            try {
-                const webhookUrl = 'https://cade-incomputable-nonfervently.ngrok-free.dev/webhook/cotizacion-form';
-                const proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(webhookUrl);
-                
-                console.log('Enviando datos:', data);
-                
-                const response = await fetch(proxyUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(data)
-                });
-                
-                console.log('Status:', response.status);
-                
-                if (response.ok || response.status === 200) {
-                    document.getElementById('formContainer').style.display = 'none';
-                    document.getElementById('successMessage').style.display = 'block';
-                } else {
-                    throw new Error('Error en la respuesta: ' + response.status);
-                }
-            } catch (error) {
-                console.error('Error completo:', error);
-                alert('Error: ' + error.message);
-                submitBtn.disabled = false;
-                submitBtn.textContent = '✅ Generar Cotización';
-            }
-        });
+        const submitBtn = document.querySelector('.btn-submit');
+        submitBtn.disabled = true;
+        submitBtn.textContent = '⏳ Enviando...';
         
-        // Inicializar la vista de productos
-        renderizarProductos();
-    </script>
+        try {
+            // IMPORTANTE: Reemplaza esto con tu URL real de ngrok
+            const webhookUrl = 'https://cade-incomputable-nonfervently.ngrok-free.dev/webhook/cotizacion-form';
+            
+            console.log('Enviando datos:', data);
+            
+            const response = await fetch(webhookUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            });
+            
+            console.log('Status:', response.status);
+            
+            if (response.ok || response.status === 200) {
+                document.getElementById('formContainer').style.display = 'none';
+                document.getElementById('successMessage').style.display = 'block';
+            } else {
+                throw new Error('Error en la respuesta: ' + response.status);
+            }
+        } catch (error) {
+            console.error('Error completo:', error);
+            alert('Error: ' + error.message + '\n\nVerifica:\n1. Ngrok está corriendo\n2. Workflow está activo\n3. URL es correcta');
+            submitBtn.disabled = false;
+            submitBtn.textContent = '✅ Generar Cotización';
+        }
+    });
+    
+    // Inicializar la vista de productos
+    renderizarProductos();
+</script>
 </body>
 </html>
+
+
 
 
